@@ -1,58 +1,90 @@
 from search import Problem
+from copy import deepcopy
+
 
 # CODIGO DADO
 
 # TAI content
-def c_peg ():
- return "O"
-def c_empty ():
- return "_"
-def c_blocked ():
- return "X"
-def is_empty (e):
- return e == c_empty()
-def is_peg (e):
- return e == c_peg()
-def is_blocked (e):
- return e == c_blocked()
+def c_peg():
+    return "O"
+
+
+def c_empty():
+    return "_"
+
+
+def c_blocked():
+    return "X"
+
+
+def is_empty(e):
+    return e == c_empty()
+
+
+def is_peg(e):
+    return e == c_peg()
+
+
+def is_blocked(e):
+    return e == c_blocked()
+
 
 # TAI pos
 # Tuplo (l, c)
-def make_pos (l, c):
- return (l, c)
-def pos_l (pos):
- return pos[0]
-def pos_c (pos):
- return pos[1]
+def make_pos(l, c):
+    return (l, c)
+
+
+def pos_l(pos):
+    return pos[0]
+
+
+def pos_c(pos):
+    return pos[1]
+
 
 # TAI move
 # Lista [p_initial, p_final]
-def make_move (i, f):
- return [i, f]
-def move_initial (move):
- return move[0]
-def move_final (move):
- return move[1]
+def make_move(i, f):
+    return [i, f]
+
+
+def move_initial(move):
+    return move[0]
+
+
+def move_final(move):
+    return move[1]
+
 
 # estrura de dados board
 def get_board_size(board):
-    return (len(board),len(board[0]))
+    return (len(board), len(board[0]))
+
+
 # def get_piece(board,)
 
 
-class solitaire(Problem):
-    def __init__(self,board):
+class Solitaire(Problem):
+    """Models a Solitaire problem as a satisfaction problem.
+    A solution cannot have more than 1 peg left on the board."""
+
+    def __init__(self, board):
         # super(self,board)
         super().__init__(board)
-    def actions(self,state):
-        pass
-    def result(self,state,action):
-        pass
-    def goal_test(self,state):
-        pass
+
+    def actions(self, state):
+        return board_moves(state)
+
+    def result(self, state, action):
+        return board_perform_move(state, action)
+
+    def goal_test(self, state):
+        return is_goal_state(state)
 
     def path_cost(self, c, state1, action, state2):
-        pass
+        """All moves have same cost"""
+        return c+1
 
     def h(self, node):
         """Needed for informed search."""
@@ -60,8 +92,8 @@ class solitaire(Problem):
 
 
 class sol_state:
-    def __init__(self,board):
-        self.board=board
+    def __init__(self, board):
+        self.board = board
 
     # for A*, this < other_state
     def __lt__(self, other):
@@ -69,41 +101,60 @@ class sol_state:
 
 
 def board_moves(board):
-    col_nr,line_nr=get_board_size(board)
+    col_nr, line_nr = get_board_size(board)
 
-    total_moves=[]
+    total_moves = []
     for i in range(line_nr):
         for j in range(col_nr):
-            #verifica comer para cima
+            # verifica comer para cima
+            if (is_peg(board[i][j])):
 
-            piece = board[i][j]
+                if i >= 2 and is_peg(board[i - 1][j]) and is_empty(board[i - 2][j]):
+                    total_moves.append(make_move(make_pos(i, j), make_pos(i - 2, j)))
 
-            if i>=2 and is_peg(board[i][j]) and is_peg(board[i - 1][j]) and is_empty(board[i - 2][j]):
-                total_moves.append(make_move(make_pos(i,j),make_pos(i-2,j)))
-
-            # comer para baixo
-            if i<line_nr-2 and is_peg(board[i][j]) and is_peg(board[i + 1][j]) and is_empty(board[i + 2][j]):
-                total_moves.append(make_move(make_pos(i,j),make_pos(i+2,j)))
-            #comer para esquerda
-            if j>=2 and is_peg(board[i][j]) and is_peg(board[i][j-1]) and is_empty(board[i][j-2]):
-                total_moves.append(make_move(make_pos(i,j),make_pos(i,j-2)))
-            #direita
-            if j<col_nr-2 and is_peg(board[i][j]) and is_peg(board[i][j+1]) and is_empty(board[i][j+2]):
-                total_moves.append(make_move(make_pos(i,j),make_pos(i,j+2)))
+                # comer para baixo
+                if i < line_nr - 2 and is_peg(board[i + 1][j]) and is_empty(board[i + 2][j]):
+                    total_moves.append(make_move(make_pos(i, j), make_pos(i + 2, j)))
+                # comer para esquerda
+                if j >= 2 and is_peg(board[i][j - 1]) and is_empty(board[i][j - 2]):
+                    total_moves.append(make_move(make_pos(i, j), make_pos(i, j - 2)))
+                # direita
+                if j < col_nr - 2 and is_peg(board[i][j + 1]) and is_empty(board[i][j + 2]):
+                    total_moves.append(make_move(make_pos(i, j), make_pos(i, j + 2)))
 
     return total_moves
 
 
-def board_perform_move(board,move):
-    pass
+def board_perform_move(board, move):
+    new_board = deepcopy(board)  # clone board (could be optim)
+    new_board[move[0][0]][move[0][1]] = c_empty()
+    new_board[move[1][0]][move[1][1]] = c_peg()
+    if (move[0][0] != move[1][0]):
+        # ent movemos para cima ou baixo
+        midle_jump = 1 if move[0][0] < move[1][0] else -1
+        new_board[move[0][0] + midle_jump][move[0][1]] = c_empty()
+    else:
+        # ent movemos para esquerda ou direita
+        midle_jump = 1 if move[0][1] < move[1][1] else -1
+        new_board[move[0][0]][move[0][1] + midle_jump] = c_empty()
+    return new_board
 
 
+def is_goal_state(board):
+    # returns True if board in final state
+    col_nr, line_nr = get_board_size(board)
+    peg_nr = 0
+    for i in range(line_nr):
+        for j in range(col_nr):
+            if is_peg(board[i][j]):
+                peg_nr += 1
+    return peg_nr == 1
 
 
-if __name__=="__main__":
-    # For testing
-    b1 = [["_", "O", "O", "O", "_"],
-          ["O", "_", "O", "_", "O"],
-          ["_", "O", "_", "O", "_"],
-          ["O", "_", "O", "_", "_"],
-          ["_", "O", "_", "_", "_"]]
+# if __name__=="__main__":
+#     # For testing
+b1 = [["_", "O", "O", "O", "_"],
+      ["O", "_", "O", "_", "O"],
+      ["_", "O", "_", "O", "_"],
+      ["O", "_", "O", "_", "_"],
+      ["_", "O", "_", "_", "_"]]
