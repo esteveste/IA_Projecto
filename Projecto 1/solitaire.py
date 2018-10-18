@@ -1,39 +1,5 @@
 from search import Problem
 
-
-class solitaire(Problem):
-    def __init__(self,board):
-        super(self,board)
-    def actions(self,state):
-        pass
-    def result(self,state,action):
-        pass
-    def goal_test(self,state):
-        pass
-
-    def path_cost(self, c, state1, action, state2):
-        pass
-
-    def h(self, node):
-        """Needed for informed search."""
-        pass
-
-
-class sol_state:
-    def __init__(self,board):
-        self.board=board
-
-    # for A*, this < other_state
-    def __lt__(self, other):
-        pass
-
-
-def board_moves(board):
-    pass
-def board_perform_move(board,move):
-    pass
-
-
 # CODIGO DADO
 
 # TAI content
@@ -68,8 +34,76 @@ def move_initial (move):
 def move_final (move):
  return move[1]
 
+# estrura de dados board
+def get_board_size(board):
+    return (len(board),len(board[0]))
+# def get_piece(board,)
+
+
+class solitaire(Problem):
+    def __init__(self,board):
+        # super(self,board)
+        super().__init__(board)
+    def actions(self,state):
+        pass
+    def result(self,state,action):
+        pass
+    def goal_test(self,state):
+        pass
+
+    def path_cost(self, c, state1, action, state2):
+        pass
+
+    def h(self, node):
+        """Needed for informed search."""
+        pass
+
+
+class sol_state:
+    def __init__(self,board):
+        self.board=board
+
+    # for A*, this < other_state
+    def __lt__(self, other):
+        pass
+
+
+def board_moves(board):
+    col_nr,line_nr=get_board_size(board)
+
+    total_moves=[]
+    for i in range(line_nr):
+        for j in range(col_nr):
+            #verifica comer para cima
+
+            piece = board[i][j]
+
+            if i>=2 and is_peg(board[i][j]) and is_peg(board[i - 1][j]) and is_empty(board[i - 2][j]):
+                total_moves.append(make_move(make_pos(i,j),make_pos(i-2,j)))
+
+            # comer para baixo
+            if i<line_nr-2 and is_peg(board[i][j]) and is_peg(board[i + 1][j]) and is_empty(board[i + 2][j]):
+                total_moves.append(make_move(make_pos(i,j),make_pos(i+2,j)))
+            #comer para esquerda
+            if j>=2 and is_peg(board[i][j]) and is_peg(board[i][j-1]) and is_empty(board[i][j-2]):
+                total_moves.append(make_move(make_pos(i,j),make_pos(i,j-2)))
+            #direita
+            if j<col_nr-2 and is_peg(board[i][j]) and is_peg(board[i][j+1]) and is_empty(board[i][j+2]):
+                total_moves.append(make_move(make_pos(i,j),make_pos(i,j+2)))
+
+    return total_moves
+
+
+def board_perform_move(board,move):
+    pass
+
+
 
 
 if __name__=="__main__":
     # For testing
-    b1 = [["_", "O", "O", "O", "_"], ["O", "_", "O", "_", "O"], ["_", "O", "_", "O", "_"],["O", "_", "O", "_", "_"], ["_", "O", "_", "_", "_"]]
+    b1 = [["_", "O", "O", "O", "_"],
+          ["O", "_", "O", "_", "O"],
+          ["_", "O", "_", "O", "_"],
+          ["O", "_", "O", "_", "_"],
+          ["_", "O", "_", "_", "_"]]
