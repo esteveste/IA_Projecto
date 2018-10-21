@@ -1,5 +1,5 @@
 from search import Problem
-from copy import deepcopy
+import copy
 
 
 # CODIGO DADO
@@ -126,18 +126,19 @@ def board_moves(board):
 
 
 def board_perform_move(board, move):
-    new_board = deepcopy(board)  # clone board (could be optim)
-    new_board[move[0][0]][move[0][1]] = c_empty()
-    new_board[move[1][0]][move[1][1]] = c_peg()
-    if (move[0][0] != move[1][0]):
-        # ent movemos para cima ou baixo
-        midle_jump = 1 if move[0][0] < move[1][0] else -1
-        new_board[move[0][0] + midle_jump][move[0][1]] = c_empty()
-    else:
-        # ent movemos para esquerda ou direita
-        midle_jump = 1 if move[0][1] < move[1][1] else -1
-        new_board[move[0][0]][move[0][1] + midle_jump] = c_empty()
-    return new_board
+    b_aux = copy.deepcopy(board)
+
+    i_l=pos_l(move_initial(move))
+    i_c=pos_c(move_initial(move))
+    f_l=pos_l(move_final(move))
+    f_c=pos_c(move_final(move))
+
+    b_aux[i_l][i_c] = c_empty()
+    b_aux[f_l][f_c] = c_peg()
+
+    b_aux[int((i_l+f_l)/2)][int((i_c+f_c)/2)] = c_empty()
+
+    return b_aux
 
 
 def is_goal_state(board):
@@ -153,8 +154,23 @@ def is_goal_state(board):
 
 # if __name__=="__main__":
 #     # For testing
-b1 = [["_", "O", "O", "O", "_"],
+t1 = [["_", "O", "O", "O", "_"],
       ["O", "_", "O", "_", "O"],
       ["_", "O", "_", "O", "_"],
       ["O", "_", "O", "_", "_"],
       ["_", "O", "_", "_", "_"]]
+
+t2 = [["O", "O", "O", "X"],
+      ["O", "O", "O", "O"],
+      ["O", "_", "O", "O"],
+      ["O", "O", "O", "O"]]
+
+t3 = [["O", "O", "O", "X", "X"],
+      ["O", "O", "O", "O", "O"],
+      ["O", "_", "O", "_", "O"],
+      ["O", "O", "O", "O", "O"]]
+
+t4 = [["O", "O", "O", "X", "X", "X"],
+      ["O", "_", "O", "O", "O", "O"],
+      ["O", "O", "O", "O", "O", "O"],
+      ["O", "O", "O", "O", "O", "O"]]
