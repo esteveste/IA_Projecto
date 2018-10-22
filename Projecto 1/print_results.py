@@ -98,7 +98,7 @@ board4 = [["O", "O", "O", "X", "X", "X"],
 
 
 def main():
-    mooshakTests("tests") # tests is the directory name
+    # mooshakTests("IA201819-Solitaire-Tests") # tests is the directory name
 
     test_dic = test_algorithms(board3, astar=True,greedy=True,depth=True)
     print_results_table(test_dic)

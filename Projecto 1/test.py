@@ -78,5 +78,5 @@ compare_searchers([solitaire(b2),solitaire(board4)],["Algoritms","Board","B2"],s
 
 print("\nMemory use:\n")
 snapshot = tracemalloc.take_snapshot()
-# display_top(snapshot)
+display_top(snapshot)
 

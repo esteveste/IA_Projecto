@@ -101,7 +101,7 @@ class sol_state:
     # for A*, this < other_state
     def __lt__(self, other):
         return self.h > other.h
-        # return True
+        # return self.nr_pieces > other.nr_pieces
 
     def calculate_heuristic(self):
 
@@ -112,37 +112,37 @@ class sol_state:
         total_heuristic = 0
         count_pieces = 0
         # center_heuristic=0
-
-        for i in range(line_nr):
-
-            line_heuristic = 0
-            found_piece = False
-
-            for j in range(col_nr):
-                if is_peg(self.board[i][j]):
-
-                    # count_pieces+=1
-                    # center_heuristic+= abs((i-line_nr/2)+(j-col_nr/2))
-                    if (found_piece):
-                        total_heuristic += line_heuristic
-                        line_heuristic = 1
-                    else:
-                        found_piece = True
-                        line_heuristic += 1
         #
-        for i in range(line_nr):
-
-            line_heuristic = 0
-            found_piece = False
-
-            for j in range(col_nr):
-                if is_peg(self.board[i][j]):
-                    if (found_piece):
-                        total_heuristic += line_heuristic
-                        line_heuristic = 1
-                    else:
-                        found_piece = True
-                        line_heuristic += 1
+        # for i in range(line_nr):
+        #
+        #     line_heuristic = 0
+        #     found_piece = False
+        #
+        #     for j in range(col_nr):
+        #         if is_peg(self.board[i][j]):
+        #
+        #             # count_pieces+=1
+        #             # center_heuristic+= abs((i-line_nr/2)+(j-col_nr/2))
+        #             if (found_piece):
+        #                 total_heuristic += line_heuristic
+        #                 line_heuristic = 1
+        #             else:
+        #                 found_piece = True
+        #                 line_heuristic += 1
+        # #
+        # for i in range(line_nr):
+        #
+        #     line_heuristic = 0
+        #     found_piece = False
+        #
+        #     for j in range(col_nr):
+        #         if is_peg(self.board[i][j]):
+        #             if (found_piece):
+        #                 total_heuristic += line_heuristic
+        #                 line_heuristic = 1
+        #             else:
+        #                 found_piece = True
+        #                 line_heuristic += 1
 
         # peg_isolada = 0
         # for i in range(line_nr):
@@ -166,10 +166,17 @@ class sol_state:
                             if  is_peg(self.board[ii][jj]):
                                 distance_h+=abs(i-ii)+abs(j-jj)
 
+        peg_sem_move=0
+        pieces = [i[0] for i in board_moves(self.board)]
+        for i in range(line_nr):
+            for j in range(col_nr):
+                if is_peg(self.board[i][j]) and not make_pos(i,j) in pieces:
+                    peg_sem_move+=1
+
         # ManHatan distance
         self.nr_pieces = count_pieces
-        # return (count_pieces, count_pieces-1 + peg_isolada)
-        return (count_pieces,len(board_moves(self.board))+count_pieces+distance_h/ (2 * count_pieces))
+        return (count_pieces, count_pieces-1 + peg_sem_move+distance_h/ (2 * count_pieces))
+        # return (count_pieces,len(board_moves(self.board))+count_pieces+distance_h/ (2 * count_pieces))
 
 
 def board_moves(board):
@@ -198,18 +205,19 @@ def board_moves(board):
 
 
 def board_perform_move(board, move):
-    new_board = deepcopy(board)  # clone board (could be optim)
-    new_board[move[0][0]][move[0][1]] = c_empty()
-    new_board[move[1][0]][move[1][1]] = c_peg()
-    if (move[0][0] != move[1][0]):
-        # ent movemos para cima ou baixo
-        midle_jump = 1 if move[0][0] < move[1][0] else -1
-        new_board[move[0][0] + midle_jump][move[0][1]] = c_empty()
-    else:
-        # ent movemos para esquerda ou direita
-        midle_jump = 1 if move[0][1] < move[1][1] else -1
-        new_board[move[0][0]][move[0][1] + midle_jump] = c_empty()
-    return new_board
+    b_aux = deepcopy(board)
+
+    i_l=pos_l(move_initial(move))
+    i_c=pos_c(move_initial(move))
+    f_l=pos_l(move_final(move))
+    f_c=pos_c(move_final(move))
+
+    b_aux[i_l][i_c] = c_empty()
+    b_aux[f_l][f_c] = c_peg()
+
+    b_aux[int((i_l+f_l)/2)][int((i_c+f_c)/2)] = c_empty()
+
+    return b_aux
 
 
 def is_goal_state(board):
@@ -221,11 +229,3 @@ def is_goal_state(board):
             if is_peg(board[i][j]):
                 peg_nr += 1
     return peg_nr == 1
-
-# if __name__=="__main__":
-#     # For testing
-# b1 = [["_", "O", "O", "O", "_","_", "O", "O", "O", "_"],
-#       ["O", "_", "O", "_", "O","O", "X", "O", "_", "_"],
-#       ["_", "O", "_", "O", "O","O", "X", "O", "_", "_"],
-#       ["O", "X", "O", "_", "_","_", "O", "O", "O", "_"],
-#       ["_", "O", "_", "_", "_","_", "X", "_", "_", "_"]]
