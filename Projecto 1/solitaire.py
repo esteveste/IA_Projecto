@@ -1,5 +1,6 @@
 from search import Problem
 from copy import deepcopy
+import math
 
 
 # CODIGO DADO
@@ -65,43 +66,114 @@ def get_board_size(board):
 # def get_piece(board,)
 
 
-class Solitaire(Problem):
+class solitaire(Problem):
     """Models a Solitaire problem as a satisfaction problem.
     A solution cannot have more than 1 peg left on the board."""
 
     def __init__(self, board):
-        # super(self,board)
-        super().__init__(board)
+        super().__init__(sol_state(board))
 
     def actions(self, state):
-        return board_moves(state)
+        return board_moves(state.board)
 
     def result(self, state, action):
-        return board_perform_move(state, action)
+        return sol_state(board_perform_move(state.board, action))
 
     def goal_test(self, state):
-        return is_goal_state(state)
+        return is_goal_state(state.board)
+        # return False
 
     def path_cost(self, c, state1, action, state2):
         """All moves have same cost"""
-        return c+1
+        return c + 1
 
     def h(self, node):
         """Needed for informed search."""
-        pass
+        return node.state.h
+        # return 0
 
 
 class sol_state:
     def __init__(self, board):
         self.board = board
+        self.nr_pieces, self.h = self.calculate_heuristic()
 
     # for A*, this < other_state
     def __lt__(self, other):
-        pass
+        return self.h > other.h
+        # return True
+
+    def calculate_heuristic(self):
+
+        line_nr,col_nr  = get_board_size(self.board)
+
+        # count until next piece
+
+        total_heuristic = 0
+        count_pieces = 0
+        # center_heuristic=0
+
+        for i in range(line_nr):
+
+            line_heuristic = 0
+            found_piece = False
+
+            for j in range(col_nr):
+                if is_peg(self.board[i][j]):
+
+                    # count_pieces+=1
+                    # center_heuristic+= abs((i-line_nr/2)+(j-col_nr/2))
+                    if (found_piece):
+                        total_heuristic += line_heuristic
+                        line_heuristic = 1
+                    else:
+                        found_piece = True
+                        line_heuristic += 1
+        #
+        for i in range(line_nr):
+
+            line_heuristic = 0
+            found_piece = False
+
+            for j in range(col_nr):
+                if is_peg(self.board[i][j]):
+                    if (found_piece):
+                        total_heuristic += line_heuristic
+                        line_heuristic = 1
+                    else:
+                        found_piece = True
+                        line_heuristic += 1
+
+        # peg_isolada = 0
+        # for i in range(line_nr):
+        #
+        #     for j in range(col_nr):
+        #         if is_peg(self.board[i][j]):
+        #             count_pieces += 1
+        #             if (i == 0 or not is_peg(self.board[i - 1][j])) and (
+        #                     i == line_nr-1 or not is_peg(self.board[i + 1][j])) and (
+        #                     j == 0 or not is_peg(self.board[i][j - 1])) and (
+        #                     j == col_nr-1 or not is_peg(self.board[i][j + 1])):
+        #                 peg_isolada += 1
+        distance_h=0
+        l=[]
+        for i in range(line_nr):
+            for j in range(col_nr):
+                if is_peg(self.board[i][j]):
+                    count_pieces+=1
+                    for ii in range(line_nr):
+                        for jj in range(col_nr):
+                            if  is_peg(self.board[ii][jj]):
+                                distance_h+=abs(i-ii)+abs(j-jj)
+
+        # ManHatan distance
+        self.nr_pieces = count_pieces
+        # return (count_pieces, count_pieces-1 + peg_isolada)
+        return (count_pieces,len(board_moves(self.board))+count_pieces+distance_h/ (2 * count_pieces))
 
 
 def board_moves(board):
-    col_nr, line_nr = get_board_size(board)
+    line_nr,col_nr = get_board_size(board)
 
     total_moves = []
     for i in range(line_nr):
@@ -142,7 +214,7 @@ def board_perform_move(board, move):
 
 def is_goal_state(board):
     # returns True if board in final state
-    col_nr, line_nr = get_board_size(board)
+    line_nr,col_nr  = get_board_size(board)
     peg_nr = 0
     for i in range(line_nr):
         for j in range(col_nr):
@@ -150,11 +222,10 @@ def is_goal_state(board):
                 peg_nr += 1
     return peg_nr == 1
 
-
 # if __name__=="__main__":
 #     # For testing
-b1 = [["_", "O", "O", "O", "_"],
-      ["O", "_", "O", "_", "O"],
-      ["_", "O", "_", "O", "_"],
-      ["O", "_", "O", "_", "_"],
-      ["_", "O", "_", "_", "_"]]
+# b1 = [["_", "O", "O", "O", "_","_", "O", "O", "O", "_"],
+#       ["O", "_", "O", "_", "O","O", "X", "O", "_", "_"],
+#       ["_", "O", "_", "O", "O","O", "X", "O", "_", "_"],
+#       ["O", "X", "O", "_", "_","_", "O", "O", "O", "_"],
+#       ["_", "O", "_", "_", "_","_", "X", "_", "_", "_"]]
