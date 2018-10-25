@@ -80,7 +80,7 @@ class solitaire(Problem):
         return sol_state(board_perform_move(state.board, action))
 
     def goal_test(self, state):
-        return is_goal_state(state.board)
+        return state.nr_pieces == 1
         # return False
 
     def path_cost(self, c, state1, action, state2):
@@ -112,37 +112,6 @@ class sol_state:
         total_heuristic = 0
         count_pieces = 0
         # center_heuristic=0
-        #
-        # for i in range(line_nr):
-        #
-        #     line_heuristic = 0
-        #     found_piece = False
-        #
-        #     for j in range(col_nr):
-        #         if is_peg(self.board[i][j]):
-        #
-        #             # count_pieces+=1
-        #             # center_heuristic+= abs((i-line_nr/2)+(j-col_nr/2))
-        #             if (found_piece):
-        #                 total_heuristic += line_heuristic
-        #                 line_heuristic = 1
-        #             else:
-        #                 found_piece = True
-        #                 line_heuristic += 1
-        # #
-        # for i in range(line_nr):
-        #
-        #     line_heuristic = 0
-        #     found_piece = False
-        #
-        #     for j in range(col_nr):
-        #         if is_peg(self.board[i][j]):
-        #             if (found_piece):
-        #                 total_heuristic += line_heuristic
-        #                 line_heuristic = 1
-        #             else:
-        #                 found_piece = True
-        #                 line_heuristic += 1
 
         # peg_isolada = 0
         # for i in range(line_nr):
@@ -175,7 +144,8 @@ class sol_state:
 
         # ManHatan distance
         self.nr_pieces = count_pieces
-        return (count_pieces, count_pieces-1 + peg_sem_move+distance_h/ (2 * count_pieces))
+        return (count_pieces, peg_sem_move+distance_h/ (2 * count_pieces))
+        #return (count_pieces, count_pieces-1 + peg_sem_move)
         # return (count_pieces,len(board_moves(self.board))+count_pieces+distance_h/ (2 * count_pieces))
 
 
@@ -185,21 +155,23 @@ def board_moves(board):
     total_moves = []
     for i in range(line_nr):
         for j in range(col_nr):
-            # verifica comer para cima
-            if (is_peg(board[i][j])):
 
+            if (is_peg(board[i][j])):
+                # comer para esquerda
+                if j >= 2 and is_peg(board[i][j - 1]) and is_empty(board[i][j - 2]):
+                    total_moves.append(make_move(make_pos(i, j), make_pos(i, j - 2)))
+                # verifica comer para cima
                 if i >= 2 and is_peg(board[i - 1][j]) and is_empty(board[i - 2][j]):
                     total_moves.append(make_move(make_pos(i, j), make_pos(i - 2, j)))
+
+                # direita
+                if j < col_nr - 2 and is_peg(board[i][j + 1]) and is_empty(board[i][j + 2]):
+                    total_moves.append(make_move(make_pos(i, j), make_pos(i, j + 2)))
 
                 # comer para baixo
                 if i < line_nr - 2 and is_peg(board[i + 1][j]) and is_empty(board[i + 2][j]):
                     total_moves.append(make_move(make_pos(i, j), make_pos(i + 2, j)))
-                # comer para esquerda
-                if j >= 2 and is_peg(board[i][j - 1]) and is_empty(board[i][j - 2]):
-                    total_moves.append(make_move(make_pos(i, j), make_pos(i, j - 2)))
-                # direita
-                if j < col_nr - 2 and is_peg(board[i][j + 1]) and is_empty(board[i][j + 2]):
-                    total_moves.append(make_move(make_pos(i, j), make_pos(i, j + 2)))
+
 
     return total_moves
 
@@ -219,13 +191,3 @@ def board_perform_move(board, move):
 
     return b_aux
 
-
-def is_goal_state(board):
-    # returns True if board in final state
-    line_nr,col_nr  = get_board_size(board)
-    peg_nr = 0
-    for i in range(line_nr):
-        for j in range(col_nr):
-            if is_peg(board[i][j]):
-                peg_nr += 1
-    return peg_nr == 1

@@ -1,7 +1,6 @@
 from solitaire import *
 from os import walk
-from search import (Problem, depth_limited_search, breadth_first_search, depth_first_tree_search,
-                    astar_search, greedy_best_first_graph_search)
+from search import *
 import timeit
 from utils import print_table
 
@@ -117,7 +116,14 @@ def greedy_search(solitaire):
 #  Depth
 #  A*
 # -------------------------------
-
+# def compare_searchers(problems, header,searchers):
+#     def do(searcher, problem):
+# def do(problem,searcher):
+#     p = InstrumentedProblem(problem)
+#     searcher(p)
+#     return p
+    # table = [[name(s)] + [do(s, p) for p in problems] for s in searchers]
+    # # print_table(table, header)
 
 def test_algorithms(board, greedy=False, depth=False, astar=False):
     greedy_game = solitaire(board)
@@ -128,15 +134,18 @@ def test_algorithms(board, greedy=False, depth=False, astar=False):
 
     if greedy:
         start_time = timeit.default_timer()
-        greedy_best_first_graph_search(greedy_game, greedy_game.h)
+        # greedy_best_first_graph_search(greedy_game, greedy_game.h)
+        greedy_p=do(greedy_game,greedy_search)
         greedy_time = round(timeit.default_timer() - start_time, 3)
     if depth:
         start_time = timeit.default_timer()
-        depth_limited_search(depth_game)
+        # depth_limited_search(depth_game)
+        depth_p=do(depth_game,depth_limited_search)
         depth_time = round(timeit.default_timer() - start_time, 3)
     if astar:
         start_time = timeit.default_timer()
-        astar_search(astar_game, astar_game.h)
+        # astar_search(astar_game, astar_game.h)
+        astar_p=do(astar_game,lambda x:astar_search(x,x.h))
         astar_time = round(timeit.default_timer() - start_time, 3)
 
     result_dic = {"greedy": {
@@ -223,6 +232,6 @@ def mooshakTests(tests_dir):
 
 if __name__ == "__main__":
     main()
-    print("\nMemory use:\n")
-    snapshot = tracemalloc.take_snapshot()
-    display_top(snapshot)
+    # print("\nMemory use:\n")
+    # snapshot = tracemalloc.take_snapshot()
+    # display_top(snapshot)
