@@ -63,8 +63,6 @@ def get_board_size(board):
     return (len(board), len(board[0]))
 
 
-# def get_piece(board,)
-
 
 class solitaire(Problem):
     """Models a Solitaire problem as a satisfaction problem.
@@ -107,25 +105,10 @@ class sol_state:
 
         line_nr,col_nr  = get_board_size(self.board)
 
-        # count until next piece
-
-        total_heuristic = 0
         count_pieces = 0
-        # center_heuristic=0
-
-        # peg_isolada = 0
-        # for i in range(line_nr):
-        #
-        #     for j in range(col_nr):
-        #         if is_peg(self.board[i][j]):
-        #             count_pieces += 1
-        #             if (i == 0 or not is_peg(self.board[i - 1][j])) and (
-        #                     i == line_nr-1 or not is_peg(self.board[i + 1][j])) and (
-        #                     j == 0 or not is_peg(self.board[i][j - 1])) and (
-        #                     j == col_nr-1 or not is_peg(self.board[i][j + 1])):
-        #                 peg_isolada += 1
         distance_h=0
-        l=[]
+        # Manhatam distance + count peg
+
         for i in range(line_nr):
             for j in range(col_nr):
                 if is_peg(self.board[i][j]):
@@ -135,6 +118,7 @@ class sol_state:
                             if  is_peg(self.board[ii][jj]):
                                 distance_h+=abs(i-ii)+abs(j-jj)
 
+        # pegs sem move
         peg_sem_move=0
         pieces = [i[0] for i in board_moves(self.board)]
         for i in range(line_nr):
@@ -142,11 +126,7 @@ class sol_state:
                 if is_peg(self.board[i][j]) and not make_pos(i,j) in pieces:
                     peg_sem_move+=1
 
-        # ManHatan distance
-        self.nr_pieces = count_pieces
         return (count_pieces, peg_sem_move+distance_h/ (2 * count_pieces))
-        #return (count_pieces, count_pieces-1 + peg_sem_move)
-        # return (count_pieces,len(board_moves(self.board))+count_pieces+distance_h/ (2 * count_pieces))
 
 
 def board_moves(board):
