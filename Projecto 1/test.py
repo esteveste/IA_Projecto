@@ -59,15 +59,20 @@ b4 = [["O", "O", "O", "X", "X", "X"],
           ["O", "O", "O", "O", "O", "O"],
           ["O", "O", "O", "O", "O", "O"]]
 
-board = [["X", "X", "O", "O", "O", "O", "O", "X", "X"],
-         ["X", "X", "O", "O", "O", "O", "O", "X", "X"],
-         ["O", "O", "O", "O", "O", "O", "O", "O", "O"],
-         ["O", "O", "O", "O", "O", "O", "O", "O", "O"],
-         ["O", "O", "O", "O", "_", "O", "O", "O", "O"],
-         ["O", "O", "O", "O", "O", "O", "O", "O", "O"],
-         ["O", "O", "O", "O", "O", "O", "O", "O", "O"],
-         ["X", "X", "O", "O", "O", "O", "O", "X", "X"],
-         ["X", "X", "O", "O", "O", "O", "O", "X", "X"]]
+no_sol=  [["O", "O", "O", "X", "X"],
+          ["O", "O", "O", "O", "O"],
+          ["O", "_", "O", "_", "_"],
+          ["O", "O", "_", "O", "O"]]
+
+# board = [["X", "X", "O", "O", "O", "O", "O", "X", "X"],
+#          ["X", "X", "O", "O", "O", "O", "O", "X", "X"],
+#          ["O", "O", "O", "O", "O", "O", "O", "O", "O"],
+#          ["O", "O", "O", "O", "O", "O", "O", "O", "O"],
+#          ["O", "O", "O", "O", "_", "O", "O", "O", "O"],
+#          ["O", "O", "O", "O", "O", "O", "O", "O", "O"],
+#          ["O", "O", "O", "O", "O", "O", "O", "O", "O"],
+#          ["X", "X", "O", "O", "O", "O", "O", "X", "X"],
+#          ["X", "X", "O", "O", "O", "O", "O", "X", "X"]]
 
 # compare_searchers([solitaire(b2),solitaire(board4),solitaire(b1)],["Algoritms","Board","B2"],searchers=[
 #     # breadth_first_tree_search,
@@ -85,10 +90,11 @@ def greedy_search(solitaire):
 for s in [
     # breadth_first_tree_search,
     #                              breadth_first_search,
-                                depth_first_graph_search,
+    #                             depth_first_graph_search,
+depth_first_tree_search
                                  # iterative_deepening_search,
                                  # depth_limited_search,
-                                 recursive_best_first_search,
+                                 # recursive_best_first_search,
                                 # greedy_best_first_graph_search,
                                 #  astar_search
           ]:
@@ -106,32 +112,42 @@ for s in [
     time = round(timeit.default_timer() - start_time, 3)
     print("Executing time:{}\n".format(time))
     start_time = timeit.default_timer()
-    if(s!=depth_first_graph_search):
-        compare_searchers([solitaire(b4)], ["B4", "Branches/Test Solution/Nodes"], [s])
-        time = round(timeit.default_timer() - start_time, 3)
-        print("Executing time:{}\n".format(time))
+    # if(s!=depth_first_graph_search):
+    compare_searchers([solitaire(b4)], ["B4", "Branches/Test Solution/Nodes"], [s])
+    time = round(timeit.default_timer() - start_time, 3)
+    print("Executing time:{}\n".format(time))
+
+    # start_time = timeit.default_timer()
+    # compare_searchers([solitaire(no_sol)], ["B1", "Branches/Test Solution/Nodes"], [s])
+    # time = round(timeit.default_timer() - start_time, 3)
+    # print("Executing time:{}\n".format(time))
 
 
 
 
 for s in [greedy_search,
                                  astar_search]:
-    start_time = timeit.default_timer()
-    compare_searchers([solitaire(b1)], ["B1", "Branches/Test Solution/Nodes"], [s])
-    time = round(timeit.default_timer() - start_time, 3)
-    print("Executing time:{}\n".format(time))
-    start_time = timeit.default_timer()
-    compare_searchers([solitaire(b2)], ["B2", "Branches/Test Solution/Nodes"], [s])
-    time = round(timeit.default_timer() - start_time, 3)
-    print("Executing time:{}\n".format(time))
-    start_time = timeit.default_timer()
-    compare_searchers([solitaire(b3)], ["B3", "Branches/Test Solution/Nodes"], [s])
-    time = round(timeit.default_timer() - start_time, 3)
-    print("Executing time:{}\n".format(time))
+    # start_time = timeit.default_timer()
+    # compare_searchers([solitaire(b1)], ["B1", "Branches/Test Solution/Nodes"], [s])
+    # time = round(timeit.default_timer() - start_time, 3)
+    # print("Executing time:{}\n".format(time))
+    # start_time = timeit.default_timer()
+    # compare_searchers([solitaire(b2)], ["B2", "Branches/Test Solution/Nodes"], [s])
+    # time = round(timeit.default_timer() - start_time, 3)
+    # print("Executing time:{}\n".format(time))
+    # start_time = timeit.default_timer()
+    # compare_searchers([solitaire(b3)], ["B3", "Branches/Test Solution/Nodes"], [s])
+    # time = round(timeit.default_timer() - start_time, 3)
+    # print("Executing time:{}\n".format(time))
     start_time = timeit.default_timer()
     compare_searchers([solitaire(b4)], ["B4", "Branches/Test Solution/Nodes"], [s])
     time = round(timeit.default_timer() - start_time, 3)
     print("Executing time:{}\n".format(time))
+
+    # start_time = timeit.default_timer()
+    # compare_searchers([solitaire(no_sol)], ["B1", "Branches/Test Solution/Nodes"], [s])
+    # time = round(timeit.default_timer() - start_time, 3)
+    # print("Executing time:{}\n".format(time))
 
 # start_time = timeit.default_timer()
 # compare_searchers([solitaire(board)], ["B4", "Branches/Test Solution/Nodes"], [astar_search])
