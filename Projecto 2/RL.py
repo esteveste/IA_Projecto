@@ -5,9 +5,11 @@ Created on Mon Oct 16 20:31:54 2017
 @author: mlopes
 """
 import numpy as np
+
 import random
 
 from tempfile import TemporaryFile
+
 outfile = TemporaryFile()
 	
 class finiteMDP:
@@ -20,10 +22,11 @@ class finiteMDP:
         self.P = P
         self.R = R
         self.absorv = absorv
-        # completar se necessario
+        #importancia do que foi aprendido no passado (learning rate)
+        self.alpha = 0.1
         
             
-    def runPolicy(self, n, x0,  poltype = 'greedy', polpar=[]):
+    def runPolicy(self, n, x0, poltype = 'greedy', polpar=[]):
         #nao alterar
         traj = np.zeros((n,4))
         x = x0
@@ -62,27 +65,26 @@ class finiteMDP:
 
             
     def traces2Q(self, trace):
-                # implementar esta funcao
-        
+        self.Q = np.zeros((self.nS, self.nA))
+
+
 
         return self.Q
     
     def policy(self, x, poltype = 'exploration', par = []):
-        # implementar esta funcao
-        
+        #par e uma matriz Q
+
         if poltype == 'exploitation':
-            pass
+            #retorna o indice da acao que tem maior retorno
+            a = np.argmax(par[x])
 
             
         elif poltype == 'exploration':
-            pass
+            # escolhe um numero random entre 0 e o numero de accoes
+            a = random.randint(0, self.nA-1)
 
-                
         return a
     
     def Q2pol(self, Q, eta=5):
-        # implementar esta funcao
+        #nao fazer nada
         return np.exp(eta*Q)/np.dot(np.exp(eta*Q),np.array([[1,1],[1,1]]))
-
-
-            
