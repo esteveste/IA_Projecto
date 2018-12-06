@@ -18,7 +18,7 @@ class Node():
     
     def computeProb(self, evid):
         # vamos buscar o valor da prob
-        prob = self.prob.item(tuple(np.take(evid,self.parents))) # item tem de ser tuple para escolher o elemento
+        prob = self.prob[tuple(np.take(evid,self.parents))] # item tem de ser tuple para escolher o elemento
         return [1-prob,prob]
     
 class BN():
