@@ -14,8 +14,10 @@ class Node():
 
     
     def computeProb(self, evid):
-        # vamos buscar o valor da pro
-        prob = self.prob.item(tuple(np.take(evid,self.parents))) # item tem de ser tuple para escolher o elemento
+        # vamos buscar os valores da evidencia, conforme os pais
+        prob_index=np.take(evid,self.parents)
+        # item tem de ser tuple para escolher o elemento
+        prob = self.prob.item(tuple(prob_index))
         return [1-prob,prob]
     
 class BN():
@@ -51,4 +53,7 @@ class BN():
         
         
     def computeJointProb(self, evid):
+        '''
+        :return: retorna o produto das compute Probs
+        '''
         return np.prod([p.computeProb(evid)[evid[index]] for index,p in enumerate(self.prob)])
