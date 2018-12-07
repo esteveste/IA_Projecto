@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Grupo: 035
-Bernardo Esteves 87633
-Francisco Barata 87656
+Created on Mon Oct 16 20:31:54 2017
 
+@author: mlopes
 """
 import numpy as np
 

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Oct 15 15:51:49 2018
+Grupo: 035
+Bernardo Esteves 87633
+Francisco Barata 87656
 
-@author: mlopes
 """
 
 import numpy as np
@@ -17,8 +18,10 @@ class Node():
 
     
     def computeProb(self, evid):
-        # vamos buscar o valor da prob
-        prob = self.prob[tuple(np.take(evid,self.parents))] # item tem de ser tuple para escolher o elemento
+        # vamos buscar os valores da evidencia, conforme os pais
+        prob_index=np.take(evid,self.parents)  # O(Nr_pais)
+        # item tem de ser tuple para escolher o elemento
+        prob = self.prob.item(tuple(prob_index))  # O(1) ->numpy
         return [1-prob,prob]
     
 class BN():
@@ -28,7 +31,9 @@ class BN():
         self.prob = prob
 
     def computePostProb(self, evid):
-
+        '''
+        O(2**(desconhecidos)* O(nr_nos*O(nr_pais por no)))
+        '''
         index_calcular = evid.index(-1)
 
         nr_unk = evid.count([])
@@ -56,4 +61,11 @@ class BN():
         
         
     def computeJointProb(self, evid):
-        return np.prod([p.computeProb(evid)[evid[index]] for index,p in enumerate(self.prob)])
+        '''
+        O(nr_nos*O(nr_pais por no))
+        '''
+        final_p = 1
+        for index,p in enumerate(self.prob):
+            prob_node= p.computeProb(evid) # calcular prob do no O(1)
+            final_p *= prob_node[evid[index]] # ir buscar se e true/false conforme ev
+        return final_p
